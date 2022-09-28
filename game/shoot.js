@@ -20,7 +20,6 @@ function shoot()
         player1.bullets.push(bullet);
         bulletTime1 = clock.getElapsedTime();
     } 
-
     // move bullets
     var moveDistance = 5;
 
@@ -29,6 +28,8 @@ function shoot()
         player1.bullets[i].position.x += moveDistance * Math.cos(player1.bullets[i].angle);
         player1.bullets[i].position.y += moveDistance * Math.sin(player1.bullets[i].angle);
     }
+    //console.log(Math.trunc(player1.position.x));
+    //console.log(Math.trunc(player1.position.y));
 
 }
 
@@ -37,6 +38,7 @@ function collisions()
     bullet_collision();
     player_collision();
     player_falling();
+    enemy_collision();
 }
 
 function bullet_collision()
@@ -55,6 +57,24 @@ function bullet_collision()
 
 }
 
+function enemy_collision()
+{
+
+    //collision between bullet and enemy1
+  for (var i = 0; i < player1.bullets.length; i++)
+  {
+      if (Math.trunc(player1.bullets[i].position.x) >= Math.trunc(enemy1.position.x) && Math.trunc(player1.bullets[i].position.x) <= Math.trunc(enemy1.position.x) + 10 &&
+          Math.trunc(player1.bullets[i].position.y) >= Math.trunc(enemy1.position.y) && Math.trunc(player1.bullets[i].position.y) <= Math.trunc(enemy1.position.y) + 10)
+      {
+        enemy1.loseLife();
+        scene.remove(player1.bullets[i]);
+        player1.bullets.splice(i, 1);
+        i--;
+      }
+  }
+
+}
+
 function player_collision()
 {
     //collision between player and walls
@@ -63,6 +83,8 @@ function player_collision()
 
     if ( x > WIDTH )
         player1.graphic.position.x -= x - WIDTH;
+    if ( x < 0 )
+        player1.graphic.position.x += 0 - x;
     if ( y < 0 )
         player1.graphic.position.y -= y;
     if ( y > HEIGHT )
@@ -81,7 +103,7 @@ function player_falling()
     var element = null;
 
     for (var i = 0; i < length; i++) {
-        element = noGround[i];
+        element = noGround[i] | 0;
 
         var tileX = (element[0]) | 0;
         var tileY = (element[1]) | 0;
